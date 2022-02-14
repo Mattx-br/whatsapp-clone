@@ -212,6 +212,7 @@ class WhatsAppController {
             this.el.panelMessagesContainer.show();
         });
 
+        // open document panel
         this.el.btnAttachDocument.on('click', e => {
             this.closeAllMainPanel();
             this.el.panelDocumentPreview.show();
@@ -220,29 +221,80 @@ class WhatsAppController {
                 height: '500px'
             });
         });
+        // close document panel
         this.el.btnClosePanelDocumentPreview.on('click', e => {
             this.closeAllMainPanel();
             this.el.panelMessagesContainer.show();
         });
+        // send document 
         this.el.btnSendDocument.on('click', e => {
             console.log('send document');
         })
 
-
+        // open contact panel
         this.el.btnAttachContact.on('click', e => {
             this.el.modalContacts.show();
         });
+        // close contact panel
         this.el.btnCloseModalContacts.on('click', e => {
             this.el.modalContacts.hide();
         })
 
         // *** Attach Button 📎
 
+        // Recording audio button
+        this.el.btnSendMicrophone.on('click', e => {
+
+            this.el.recordMicrophone.show();
+            this.el.btnSendMicrophone.hide();
+            this.startRecordMicrophoneTime();
+
+        });
+        // cancel recording
+        this.el.btnCancelMicrophone.on('click', e => {
+
+            this.closeRecordMicrophone();
+
+        });
+        // send record
+        this.el.btnFinishMicrophone.on('click', e => {
+
+                this.closeRecordMicrophone();
+                console.log('audio sent');
+
+            })
+            // update record timer
+
+
         // *** Events about chat buttons
 
         // *** Main buttons
         // <=====================||=====================>
     }
+
+    // <=====================||=====================>
+    // Methods about record audio
+
+    startRecordMicrophoneTime() {
+        let start = Date.now();
+
+        this._recordMicrophoneInterval = setInterval(() => {
+            this.el.recordMicrophoneTimer.innerHTML = Format.toTime((Date.now() - start));
+
+
+        }, 1000);
+    }
+
+    closeRecordMicrophone() {
+        this.el.recordMicrophone.hide();
+        this.el.btnSendMicrophone.show();
+        clearInterval(this._recordMicrophoneInterval);
+        this.el.recordMicrophoneTimer.innerHTML = '0:00';
+    }
+
+    // *** Methods about record audio
+    // <=====================||=====================>
+
 
     closeAllMainPanel() {
         this.el.panelDocumentPreview.hide();
@@ -260,5 +312,7 @@ class WhatsAppController {
         this.el.panelEditProfile.hide();
         this.el.panelAddContact.hide();
     }
+
+
 
 } // End of class WhatsAppController
