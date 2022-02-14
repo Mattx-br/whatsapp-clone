@@ -116,7 +116,7 @@ class WhatsAppController {
             this.el.panelAddContact.removeClass('open');
         })
 
-
+        // batata
         // *** Main buttons
         // <=====================||=====================>
     }
