@@ -199,8 +199,11 @@ class WhatsAppController {
             this.closeAllMainPanel();
             this.el.panelCamera.addClass('open');
             this.el.panelCamera.css({
-                height: '500px'
+                height: '30em'
             });
+
+            this._camera = new CameraController(this.el.videoCamera);
+
         });
         this.el.btnTakePicture.on('click', e => {
             console.log('tirou a foto');
