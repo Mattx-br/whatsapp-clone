@@ -104,7 +104,6 @@ class WhatsAppController {
 
     initEvents() {
         // <=====================||=====================>
-        // Main buttons
 
         // Events about Profile
         this.el.myPhoto.on('click', e => {
@@ -142,8 +141,6 @@ class WhatsAppController {
 
             formData.getForm();
 
-
-
         })
 
         // *** Events about Profile
@@ -163,9 +160,100 @@ class WhatsAppController {
 
         // *** Events about New Contact
 
+        // Events about Contact list
+
+        this.el.contactsMessagesList.querySelectorAll('.contact-item').forEach(item => {
+
+            item.on('click', e => {
+                this.el.home.hide();
+                this.el.main.css({ display: 'flex' });
+            });
+
+        });
+
+        // ***Events about Contact list
+
+        // Events about chat buttons
+
+        // Attach Button 📎
+        this.el.btnAttach.on('click', e => {
+            event.stopPropagation();
+            this.el.menuAttach.addClass('open');
+            document.addEventListener('click', this.closeMenuAttach.bind(this));
+        });
+
+        // Upload a photo
+        this.el.btnAttachPhoto.on('click', e => {
+            this.el.inputPhoto.click();
+        });
+        this.el.inputPhoto.on('change', e => {
+            console.log(this.el.inputPhoto.files);
+
+            [...this.el.inputPhoto.files].forEach(file => {
+                console.log(file);
+            });
+        });
+
+        // Open a picture panel
+        this.el.btnAttachCamera.on('click', e => {
+            this.closeAllMainPanel();
+            this.el.panelCamera.addClass('open');
+            this.el.panelCamera.css({
+                height: '500px'
+            });
+        });
+        this.el.btnTakePicture.on('click', e => {
+            console.log('tirou a foto');
+        });
+
+        // close picture panel
+        this.el.btnClosePanelCamera.on('click', e => {
+            this.closeAllMainPanel();
+            this.el.panelMessagesContainer.show();
+        });
+
+        this.el.btnAttachDocument.on('click', e => {
+            this.closeAllMainPanel();
+            this.el.panelDocumentPreview.show();
+            this.el.panelDocumentPreview.addClass('open');
+            this.el.panelDocumentPreview.css({
+                height: '500px'
+            });
+        });
+        this.el.btnClosePanelDocumentPreview.on('click', e => {
+            this.closeAllMainPanel();
+            this.el.panelMessagesContainer.show();
+        });
+        this.el.btnSendDocument.on('click', e => {
+            console.log('send document');
+        })
+
+
+        this.el.btnAttachContact.on('click', e => {
+            this.el.modalContacts.show();
+        });
+        this.el.btnCloseModalContacts.on('click', e => {
+            this.el.modalContacts.hide();
+        })
+
+        // *** Attach Button 📎
+
+        // *** Events about chat buttons
 
         // *** Main buttons
         // <=====================||=====================>
+    }
+
+    closeAllMainPanel() {
+        this.el.panelDocumentPreview.hide();
+        this.el.panelMessagesContainer.hide();
+        this.el.panelCamera.removeClass('open');
+
+    }
+
+    closeMenuAttach(event) {
+        document.removeEventListener('click', this.closeMenuAttach);
+        this.el.menuAttach.removeClass('open');
     }
 
     closeAllLeftPanel() {
