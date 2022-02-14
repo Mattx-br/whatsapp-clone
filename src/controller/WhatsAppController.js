@@ -1,8 +1,11 @@
+import { Format } from './../util/Format';
+import { CameraController } from './CameraController';
+
+// ℹ️ 
 // When a comment Starts with an *** its because that 'section' of code ended
 
-class WhatsAppController {
+export default class WhatsAppController {
     constructor() {
-            console.log('funfou');
 
 
             this.elementsPrototype();
@@ -187,7 +190,6 @@ class WhatsAppController {
             this.el.inputPhoto.click();
         });
         this.el.inputPhoto.on('change', e => {
-            console.log(this.el.inputPhoto.files);
 
             [...this.el.inputPhoto.files].forEach(file => {
                 console.log(file);
@@ -302,7 +304,6 @@ class WhatsAppController {
         this.el.panelEmojis.querySelectorAll('.emojik').forEach(emoji => {
             emoji.on('click', e => {
 
-                console.log(emoji.dataset.unicode);
 
                 let img = this.el.imgEmojiDefault.cloneNode();
 
