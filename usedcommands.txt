@@ -1,0 +1,11 @@
+first we create a package.json file
+$ npm init
+
+then, we install webpack version 3.1.0
+$ npm install webpack@3.1.0 --save
+
+now we need devServer to run our application
+$ npm install webpack-dev-server@2.5.1 --save
+
+
+
