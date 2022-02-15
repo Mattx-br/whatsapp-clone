@@ -21483,8 +21483,26 @@ html[dir=rtl] ._2ICcy:after {
     display: none;
 }
 
+._2oKVP {
+    display: flex;
+    justify-content: center;
+}
+
+#btn-take-picture {
+    display: flex;
+}
+
 #picture-camera {
     height: 100%;
-    width: 100%;
+    width: auto;
     /* text-align: center; */
+}
+
+._3hV1nyavlE {
+    display: flex;
+}
+
+#fixing-preview {
+    display: flex;
+    justify-content: center;
 }

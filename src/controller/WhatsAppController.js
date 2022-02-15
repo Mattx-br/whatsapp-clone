@@ -1,6 +1,7 @@
 import { Format } from './../util/Format';
+import { DocumentPreviewController } from './DocumentPreviewController'
 import { CameraController } from './CameraController';
-
+// import { DocumentPreviewController } from './CameraController'
 // ℹ️ 
 // When a comment Starts with an *** its because that 'section' of code ended
 
@@ -214,9 +215,27 @@ export default class WhatsAppController {
             this.el.pictureCamera.src = dataUrl;
             this.el.pictureCamera.show();
             this.el.videoCamera.hide();
+            this.el.btnReshootPanelCamera.show();
+            this.el.containerTakePicture.hide();
+            this.el.containerSendPicture.show();
 
-            this._camera.stop();
+            // this._camera.stop();
 
+        });
+
+        this.el.btnReshootPanelCamera.on('click', e => {
+            console.log('netoru');
+            this.el.pictureCamera.hide();
+            this.el.videoCamera.show();
+            this.el.btnReshootPanelCamera.hide();
+            this.el.containerTakePicture.show();
+            this.el.containerSendPicture.hide();
+
+            // this._camera.play();
+        })
+
+        this.el.btnSendPicture.on('click', e => {
+            console.log(this.el.pictureCamera.src);
         });
 
         // close picture panel
@@ -234,7 +253,52 @@ export default class WhatsAppController {
             this.el.panelDocumentPreview.css({
                 height: '500px'
             });
+            this.el.inputDocument.click();
         });
+
+        this.el.inputDocument.on('change', e => {
+            if (this.el.inputDocument.files.length) {
+                let file = this.el.inputDocument.files[0];
+
+                this._documentPreviewController = new DocumentPreviewController(file);
+
+                this._documentPreviewController.getPreviewData().then(result => {
+
+                    this.el.imgPanelDocumentPreview.src = result.src;
+                    // this.el.filenamePanelDocumentPreview.innerHTML = 'batata';
+
+
+                    this.el.imagePanelDocumentPreview.show();
+                    this.el.filePanelDocumentPreview.hide();
+
+                    this._documentPreviewController
+
+                    console.log('ok', data);
+                }).catch(err => {
+
+                    switch (file.type) {
+                        case 'application/vnd.ms-excel':
+                            this.el.iconPanelDocumentPreview.className = 'jcxhw icon-doc-xls'
+                            break;
+                        case 'application/vnd.ms-powerpoint':
+                            this.el.iconPanelDocumentPreview.className = 'jcxhw icon-doc-ppt'
+                            break;
+                        case 'application/msword':
+                            this.el.iconPanelDocumentPreview.className = 'jcxhw icon-doc-doc'
+                            break;
+                        default:
+                            this.el.iconPanelDocumentPreview.className = 'jcxhw icon-doc-generic'
+                            break;
+                    }
+                    this.el.filenamePanelDocumentPreview.innerHTML = file.name;
+                    this.el.imagePanelDocumentPreview.hide();
+                    this.el.filePanelDocumentPreview.show();
+                });
+
+
+            }
+        });
+
         // close document panel
         this.el.btnClosePanelDocumentPreview.on('click', e => {
             this.closeAllMainPanel();
