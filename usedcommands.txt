@@ -8,4 +8,5 @@ now we need devServer to run our application
 $ npm install webpack-dev-server@2.5.1 --save
 
 
-
+installing pdf.js liv=b
+$ npm install pdfjs-dist@2.0.489 --save
