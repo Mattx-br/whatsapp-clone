@@ -9,7 +9,7 @@ export class Format {
 
     }
 
-    static toTime(durations) {
+    static toTimer(durations) {
         let seconds = parseInt((durations / 1000) % 60);
         let minutes = parseInt((durations / (1000 * 60)) % 60);
         let hours = parseInt((durations / (1000 * 60 * 60)) % 60 * 24);

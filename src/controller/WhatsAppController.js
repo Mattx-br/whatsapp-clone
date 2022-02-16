@@ -2,6 +2,7 @@ import { Format } from './../util/Format';
 import { DocumentPreviewController } from './DocumentPreviewController'
 import { MicrophoneController } from './MicrophoneController';
 import { CameraController } from './CameraController';
+import { Firebase } from './../util/Firebase';
 // import { DocumentPreviewController } from './CameraController'
 // ℹ️ 
 // When a comment Starts with an *** its because that 'section' of code ended
@@ -13,6 +14,7 @@ export default class WhatsAppController {
             this.elementsPrototype();
             this.loadElements();
             this.initEvents();
+            this._firebase = new Firebase();
 
         } // *** End of constructor
 
@@ -334,7 +336,6 @@ export default class WhatsAppController {
 
             this.el.recordMicrophone.show();
             this.el.btnSendMicrophone.hide();
-            this.startRecordMicrophoneTime();
 
             this._microphoneController = new MicrophoneController();
 
@@ -346,7 +347,10 @@ export default class WhatsAppController {
                 this._microphoneController.startRecorder();
 
 
-            })
+            });
+            this._microphoneController.on('recordtimer', timer => {
+                this.el.recordMicrophoneTimer.innerHTML = Format.toTimer(timer);
+            });
 
 
         });
@@ -354,15 +358,18 @@ export default class WhatsAppController {
         // cancel recording
         this.el.btnCancelMicrophone.on('click', e => {
 
+            this.el.recordMicrophone.hide();
+            this.el.btnSendMicrophone.show();
             this._microphoneController.stopRecorder();
-            this.closeRecordMicrophone();
+            this.el.recordMicrophoneTimer.innerHTML = '0:00';
 
         });
         // send record
         this.el.btnFinishMicrophone.on('click', e => {
-
+            this.el.recordMicrophone.hide();
+            this.el.btnSendMicrophone.show();
             this._microphoneController.stopRecorder();
-            this.closeRecordMicrophone();
+            this.el.recordMicrophoneTimer.innerHTML = '0:00';
 
         })
 
@@ -449,28 +456,6 @@ export default class WhatsAppController {
         // <=====================||=====================>
     }
 
-    // <=====================||=====================>
-    // Methods about record audio
-
-    // update record timer
-    startRecordMicrophoneTime() {
-        let start = Date.now();
-
-        this._recordMicrophoneInterval = setInterval(() => {
-            this.el.recordMicrophoneTimer.innerHTML = Format.toTime((Date.now() - start));
-
-
-        }, 1000);
-    }
-
-    closeRecordMicrophone() {
-        this.el.recordMicrophone.hide();
-        this.el.btnSendMicrophone.show();
-        clearInterval(this._recordMicrophoneInterval);
-        this.el.recordMicrophoneTimer.innerHTML = '0:00';
-    }
-
-    // *** Methods about record audio
     // <=====================||=====================>
 
 
