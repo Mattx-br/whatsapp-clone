@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore"
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { getFirestore, collection, addDoc } from "firebase/firestore"
+
 import { getStorage } from 'firebase/storage';
 
 // const firebase = require("firebase");
@@ -43,7 +44,7 @@ export class Firebase {
     }
 
     init() {
-        if (!this.initialized) {
+        if (!window.initializedFirestore) {
             // Initialize Firebase
             const firebaseApp = initializeApp(this._config);
 
@@ -51,14 +52,14 @@ export class Firebase {
             this.hd = getStorage(this.firebaseApp);
 
 
-            this.initialized = true;
+            window.initializedFirestore = true;
         }
     }
 
-    // static db() {
-    //     // const db = getFirestore(this.firebaseApp);
-    //     return this.db;
-    // }
+    static database() {
+        const db = getFirestore();
+        return db;
+    }
 
     // static hd() {
     //     // const hd = getStorage(this.firebaseApp);

@@ -3,6 +3,7 @@ import { DocumentPreviewController } from './DocumentPreviewController'
 import { MicrophoneController } from './MicrophoneController';
 import { CameraController } from './CameraController';
 import { Firebase } from './../util/Firebase';
+import { User } from '../model/User';
 // import { DocumentPreviewController } from './CameraController'
 // ℹ️ 
 // When a comment Starts with an *** its because that 'section' of code ended
@@ -28,15 +29,26 @@ export default class WhatsAppController {
             .then(response => {
                 console.log('response', response);
 
-                this._user = response.user;
+                this._user = new User();
 
-                this.el.appContent.css({ display: 'flex' });
+                let userRef = User.findingByEmail(response.user.email);
+
+                userRef.set({
+                    name: response.user.displayname,
+                    email: response.user.email,
+                    photo: response.user.photoURL
+                }).then(() => {
+                    console.log('userREf', userRef);
+                    this.el.appContent.css({ display: 'flex' });
+
+                });
+
+
 
             })
             .catch(error => {
                 console.error(error);
             })
-
 
     }
 
