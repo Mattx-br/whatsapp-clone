@@ -10,13 +10,35 @@ import { Firebase } from './../util/Firebase';
 export default class WhatsAppController {
     constructor() {
 
-
             this.elementsPrototype();
             this.loadElements();
             this.initEvents();
             this._firebase = new Firebase();
+            // console.log(this._firebase);
 
+            // Para o popup de logar com google aparecer
+            this.initAuth();
+
+            this.el.appContent.css({ display: 'none' });
         } // *** End of constructor
+
+    initAuth() {
+
+        this._firebase.initAuth()
+            .then(response => {
+                console.log('response', response);
+
+                this._user = response.user;
+
+                this.el.appContent.css({ display: 'flex' });
+
+            })
+            .catch(error => {
+                console.error(error);
+            })
+
+
+    }
 
     loadElements() {
         this.el = {};
