@@ -363,12 +363,23 @@ export default class WhatsAppController {
 
                 if (data.name) {
 
-                    this._user.addContact(contact).then(() => {
+                    Chat.createIfNotExists(this._user.email, contact.email).then(chat => {
 
-                        this.el.btnClosePanelAddContact.click();
-                        console.info("Contact added!");
+                        contact.chatId = chat.id;
+
+                        this._user.chatId = chat.id;
+
+                        contact.addContact(this._user);
+
+                        this._user.addContact(contact).then(() => {
+
+                            this.el.btnClosePanelAddContact.click();
+                            console.info("Contact added!");
+
+                        });
 
                     });
+
 
                 } else {
 
