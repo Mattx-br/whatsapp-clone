@@ -3,54 +3,39 @@ import { DocumentPreviewController } from './DocumentPreviewController'
 import { MicrophoneController } from './MicrophoneController';
 import { CameraController } from './CameraController';
 import { Firebase } from './../util/Firebase';
-import { User } from '../model/User';
-// import { DocumentPreviewController } from './CameraController'
+
 // ℹ️ 
 // When a comment Starts with an *** its because that 'section' of code ended
 
 export default class WhatsAppController {
     constructor() {
 
+            this._firebase = new Firebase();
+            this.initAuth();
+            console.log('firebase ta onfire:', this._firebase);
+
             this.elementsPrototype();
             this.loadElements();
             this.initEvents();
-            this._firebase = new Firebase();
-            // console.log(this._firebase);
 
-            // Para o popup de logar com google aparecer
-            this.initAuth();
 
-            this.el.appContent.css({ display: 'none' });
+            this.el.appContent.css({ display: 'none' })
         } // *** End of constructor
 
     initAuth() {
 
         this._firebase.initAuth()
             .then(response => {
-                console.log('response', response);
+                this.user = response.user;
 
-                this._user = new User();
-
-                let userRef = User.findingByEmail(response.user.email);
-
-                userRef.set({
-                    name: response.user.displayname,
-                    email: response.user.email,
-                    photo: response.user.photoURL
-                }).then(() => {
-                    console.log('userREf', userRef);
-                    this.el.appContent.css({ display: 'flex' });
-
-                });
-
-
-
+                this.el.appContent.css({ display: 'flex' });
             })
-            .catch(error => {
-                console.error(error);
+            .catch(err => {
+                console.error('Error on Authentication', err);
             })
 
     }
+
 
     loadElements() {
         this.el = {};
@@ -370,6 +355,7 @@ export default class WhatsAppController {
 
             this.el.recordMicrophone.show();
             this.el.btnSendMicrophone.hide();
+            this.startRecordMicrophoneTime();
 
             this._microphoneController = new MicrophoneController();
 
@@ -381,10 +367,7 @@ export default class WhatsAppController {
                 this._microphoneController.startRecorder();
 
 
-            });
-            this._microphoneController.on('recordtimer', timer => {
-                this.el.recordMicrophoneTimer.innerHTML = Format.toTimer(timer);
-            });
+            })
 
 
         });
@@ -392,18 +375,15 @@ export default class WhatsAppController {
         // cancel recording
         this.el.btnCancelMicrophone.on('click', e => {
 
-            this.el.recordMicrophone.hide();
-            this.el.btnSendMicrophone.show();
             this._microphoneController.stopRecorder();
-            this.el.recordMicrophoneTimer.innerHTML = '0:00';
+            this.closeRecordMicrophone();
 
         });
         // send record
         this.el.btnFinishMicrophone.on('click', e => {
-            this.el.recordMicrophone.hide();
-            this.el.btnSendMicrophone.show();
+
             this._microphoneController.stopRecorder();
-            this.el.recordMicrophoneTimer.innerHTML = '0:00';
+            this.closeRecordMicrophone();
 
         })
 
@@ -490,6 +470,28 @@ export default class WhatsAppController {
         // <=====================||=====================>
     }
 
+    // <=====================||=====================>
+    // Methods about record audio
+
+    // update record timer
+    startRecordMicrophoneTime() {
+        let start = Date.now();
+
+        this._recordMicrophoneInterval = setInterval(() => {
+            this.el.recordMicrophoneTimer.innerHTML = Format.toTime((Date.now() - start));
+
+
+        }, 1000);
+    }
+
+    closeRecordMicrophone() {
+        this.el.recordMicrophone.hide();
+        this.el.btnSendMicrophone.show();
+        clearInterval(this._recordMicrophoneInterval);
+        this.el.recordMicrophoneTimer.innerHTML = '0:00';
+    }
+
+    // *** Methods about record audio
     // <=====================||=====================>
 
 
