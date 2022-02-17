@@ -27,12 +27,20 @@ export class Firebase {
     }
 
     init() {
-        if (!this._initialized) {
+        if (!window._initializedFirebase) {
+
             firebase.initializeApp(this._config);
 
-            // firebase.firestore().settings({ timestampsInSnapshot: true })
+            firebase.firestore();
+            const settings = { timestampsInSnapshots: true };
 
-            this._initialized = true;
+            firebase.firestore().settings(settings);
+
+            // const timestamp = snapshot.get('created_at');
+
+            // const date = timestamp.toDate();
+
+            window._initializedFirebase = true;
         }
 
 
@@ -62,7 +70,7 @@ export class Firebase {
 
                     let user = result.user;
 
-                    s(user, token);
+                    s({ user, token });
 
                 })
                 .catch(err => {

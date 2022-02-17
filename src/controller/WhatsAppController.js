@@ -3,7 +3,7 @@ import { DocumentPreviewController } from './DocumentPreviewController'
 import { MicrophoneController } from './MicrophoneController';
 import { CameraController } from './CameraController';
 import { Firebase } from './../util/Firebase';
-
+import { User } from './../model/User'
 // ℹ️ 
 // When a comment Starts with an *** its because that 'section' of code ended
 
@@ -11,7 +11,6 @@ export default class WhatsAppController {
     constructor() {
 
             this._firebase = new Firebase();
-            this.initAuth();
             console.log('firebase ta onfire:', this._firebase);
 
             this.elementsPrototype();
@@ -19,6 +18,7 @@ export default class WhatsAppController {
             this.initEvents();
 
 
+            this.initAuth();
             this.el.appContent.css({ display: 'none' })
         } // *** End of constructor
 
@@ -26,9 +26,42 @@ export default class WhatsAppController {
 
         this._firebase.initAuth()
             .then(response => {
-                this.user = response.user;
 
-                this.el.appContent.css({ display: 'flex' });
+                this._user = new User(response.user.email);
+
+                this._user.on('datachange', data => {
+                    document.querySelector('title').innerHTML = data.name + ' - Wpp Clone';
+
+                    this.el.inputNamePanelEditProfile.innerHTML = data.name
+
+                    if (data.photo) {
+
+                        let photo = this.el.imgPanelEditProfile;
+                        photo.src = data.photo;
+
+                        photo.show();
+
+                        this.el.imgDefaultPanelEditProfile.hide();
+
+                        let photo2 = this.el.myPhoto.querySelector('img');
+                        photo2.src = data.photo;
+
+                        photo2.show();
+                    }
+                });
+
+                this._user.name = response.user.displayName;
+                this._user.email = response.user.email;
+                this._user.photo = response.user.photoURL;
+
+                this._user.save().then(() => {
+
+
+                    this.el.appContent.css({ display: 'flex' });
+
+                });
+
+
             })
             .catch(err => {
                 console.error('Error on Authentication', err);
@@ -156,7 +189,18 @@ export default class WhatsAppController {
         });
 
         this.el.btnSavePanelEditProfile.on('click', e => {
-            console.log(this.el.inputNamePanelEditProfile.innerHTML);
+
+            this.el.btnSavePanelEditProfile.disabled = true;
+
+            this._user.name = this.el.inputNamePanelEditProfile.innerHTML;
+
+            this._user.save().then(() => {
+
+                this.el.btnSavePanelEditProfile.disabled = false;
+
+            });
+
+
         })
 
         this.el.formPanelAddContact.on('submit', e => {
@@ -246,7 +290,6 @@ export default class WhatsAppController {
         });
 
         this.el.btnReshootPanelCamera.on('click', e => {
-            console.log('netoru');
             this.el.pictureCamera.hide();
             this.el.videoCamera.show();
             this.el.btnReshootPanelCamera.hide();
