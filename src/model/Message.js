@@ -324,4 +324,12 @@ export class Message extends Model {
             .doc(chatId)
             .collection('messages');
     }
+
+    getStatusViewElement() {
+        let div = document.createElement('div');
+
+
+
+        return div;
+    }
 }
