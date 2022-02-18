@@ -1,5 +1,5 @@
 import { Model } from './Model';
-
+import { Firebase } from '../util/Firebase'
 export class Chat extends Model {
 
     constructor() {
@@ -21,7 +21,7 @@ export class Chat extends Model {
 
     static find(meEmail, contactEmail) {
 
-        Chat.getRef()
+        return Chat.getRef()
             .where(btoa(meEmail), '==', true)
             .where(btoa(contactEmail), '==', true)
             .get();
@@ -40,6 +40,7 @@ export class Chat extends Model {
                     timeStamp: new Date()
                 })
                 .then(doc => {
+
                     Chat.getRef().doc(doc.id).get().then(chat => {
 
                         s(chat);
@@ -53,8 +54,8 @@ export class Chat extends Model {
     static createIfNotExists(meEmail, contactEmail) {
         return new Promise((s, f) => {
 
-            Chat.find(meEmail, contactEmail)
-                .then(chats => {
+            Chat.find(meEmail, contactEmail).then(chats => {
+
                     if (chats.empty) {
                         //Create chat
                         Chat.create(meEmail, contactEmail).then(chat => {

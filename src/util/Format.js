@@ -20,4 +20,37 @@ export class Format {
             return `${minutes.toString().padStart(1, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
     }
+
+    static dateToTime(date, locale = 'pt-BR') {
+
+        console.log(date.toLocaleTimeString(locale, {
+
+            hours: '2-digit',
+            minutes: '2-digit'
+
+        }));
+
+        return date.toLocaleTimeString(locale, {
+
+            hours: '2-digit',
+            minutes: '2-digit'
+
+        });
+
+    }
+
+    static timeStampToTime(timeStamp) {
+        let date = new Date(timeStamp);
+
+        // teacher's version
+        // return (timeStamp && typeof timeStamp.toDate === 'function') ?
+        //     Format.dateToTime(timeStamp.toDate()) :
+        //     '';
+
+
+        return (timeStamp) ?
+            date.getHours() + ':' + date.getMinutes() :
+            '';
+
+    }
 }
