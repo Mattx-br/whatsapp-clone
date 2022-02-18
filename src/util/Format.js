@@ -46,10 +46,10 @@ export class Format {
         // return (timeStamp && typeof timeStamp.toDate === 'function') ?
         //     Format.dateToTime(timeStamp.toDate()) :
         //     '';
-
+        let minutes = date.getMinutes().toString().length < 2 ? '0' + date.getMinutes().toString() : date.getMinutes();
 
         return (timeStamp) ?
-            date.getHours() + ':' + date.getMinutes() :
+            date.getHours() + ':' + minutes :
             '';
 
     }
