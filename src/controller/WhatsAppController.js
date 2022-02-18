@@ -531,13 +531,20 @@ export default class WhatsAppController {
 
         // Upload a photo
         this.el.btnAttachPhoto.on('click', e => {
+
             this.el.inputPhoto.click();
+
         });
+
+
         this.el.inputPhoto.on('change', e => {
 
             [...this.el.inputPhoto.files].forEach(file => {
-                console.log(file);
+
+                Message.sendImage(this._contactActive, this._user.email, file);
+
             });
+
         });
 
         // Open a picture panel

@@ -52,11 +52,11 @@ export class Firebase {
 
     }
 
-    // static hd() {
+    static hd() {
+        console.log('carrego o storage');
+        return firebase.storage();
 
-    //     return firebase.storage();
-
-    // }
+    }
 
     initAuth() {
         return new Promise((s, f) => {
