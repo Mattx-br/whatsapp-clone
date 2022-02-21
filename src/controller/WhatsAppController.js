@@ -22,8 +22,8 @@ export default class WhatsAppController {
             this.initEvents();
 
 
-            this.initAuth();
-            this.el.appContent.css({ display: 'none' })
+            // this.initAuth();
+            // this.el.appContent.css({ display: 'none' })
 
         } // *** End of constructor
 
@@ -856,6 +856,19 @@ export default class WhatsAppController {
         });
         // send record
         this.el.btnFinishMicrophone.on('click', e => {
+
+            this._microphoneController.on('recorded', (file, metadata) => {
+
+                Message.sendAudio(
+                    this._contactActive.chatId,
+                    this._user.email,
+                    file,
+                    metadata,
+                    this._user.photo
+                );
+
+
+            });
 
             this._microphoneController.stopRecorder();
             this.closeRecordMicrophone();
