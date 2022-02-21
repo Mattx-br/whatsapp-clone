@@ -27,7 +27,8 @@ export class Message extends Model {
         let div = document.createElement('div');
 
         div.className = 'message';
-        switch (this.types) {
+
+        switch (this.type) {
             case 'contact':
                 div.innerHTML = `
    
@@ -97,11 +98,7 @@ export class Message extends Model {
                                 <img src="${this.content}" class="_1JVSX message-photo" style="width: 100%; display:none">
                                 <div class="_1i3Za"></div>
                             </div>
-                            <div class="message-container-legend">
-                                <div class="_3zb-j ZhF0n">
-                                    <span dir="ltr" class="selectable-text invisible-space copyable-text message-text">Texto da foto</span>
-                                </div>
-                            </div>
+                            
                             <div class="_2TvOE">
                                 <div class="_1DZAH text-white" role="button">
                                     <span class="message-time">${Format.timeStampToTime(this._data.timeStamp)}</span>
@@ -121,7 +118,18 @@ export class Message extends Model {
             
                 `;
 
-                div.querySelector('.message-photo').on('load', () => { console.log('carregou'); });
+
+                div.querySelector('.message-photo').on('load', e => {
+
+
+                    div.querySelector('.message-photo').show();
+
+                    div.querySelector('._34Olu').hide();
+
+                    div.querySelector('._3v3PK').css({ height: 'auto' });
+
+                });
+
                 break;
             case 'document':
                 div.innerHTML = `
@@ -292,9 +300,8 @@ export class Message extends Model {
 
             let uploadTask = Firebase.hd().ref(from).child(Date.now() + '_' + file.name).put(file);
 
-            uploadTask.on('stage_change', e => {
+            uploadTask.on('state_changed', e => {
 
-                console.log('upou');
                 console.info('upload', e);
 
             }, err => {
@@ -304,17 +311,19 @@ export class Message extends Model {
 
             }, () => {
 
+                uploadTask.snapshot.ref.getDownloadURL().then(e => {
+                    Message.send(
+                        chatId,
+                        from,
+                        'image',
+                        uploadTask.snapshot.downloadURL
+                    ).then(() => {
 
-                Message.send(
-                    this._contactActive.chatId,
-                    this._user.email,
-                    'image',
-                    uploadTask.snapshot.downloadURL
-                ).then(() => {
+                        s();
 
-                    s();
+                    }).catch((err) => { f(err); });
 
-                }).catch((err) => { f(err); });
+                });
 
             });
 
