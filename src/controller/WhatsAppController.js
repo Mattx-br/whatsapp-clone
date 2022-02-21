@@ -2,6 +2,7 @@ import { Format } from './../util/Format';
 import { DocumentPreviewController } from './DocumentPreviewController'
 import { MicrophoneController } from './MicrophoneController';
 import { CameraController } from './CameraController';
+import { ContactsController } from './ContactsController';
 import { Firebase } from './../util/Firebase';
 import { User } from './../model/User'
 import { Chat } from './../model/Chat'
@@ -21,8 +22,8 @@ export default class WhatsAppController {
             this.initEvents();
 
 
-            // this.initAuth();
-            // this.el.appContent.css({ display: 'none' })
+            this.initAuth();
+            this.el.appContent.css({ display: 'none' })
 
         } // *** End of constructor
 
@@ -257,6 +258,8 @@ export default class WhatsAppController {
 
                 let me = (data.from == this._user.email);
 
+                let view = message.getViewElement(me);
+
                 if (!this.el.panelMessagesContainer.querySelector('#_' + data.id)) {
 
 
@@ -270,15 +273,14 @@ export default class WhatsAppController {
 
                     }
 
-                    let view = message.getViewElement(me);
-
                     this.el.panelMessagesContainer.appendChild(view);
 
                 } else {
 
-                    let view = message.getViewElement(me);
+                    let parent = this.el.panelMessagesContainer.querySelector('#_' + data.id).parentNode;
 
-                    this.el.panelMessagesContainer.querySelector('#_' + data.id).innerHTML = view.innerHTML;
+                    parent.replaceChild(view, this.el.panelMessagesContainer.querySelector('#_' + data.id));
+
 
                 }
 
@@ -291,6 +293,36 @@ export default class WhatsAppController {
 
                 }
 
+                if (message.type === 'contact') {
+
+                    view.querySelector('.btn-message-send').on('click', () => {
+
+                        console.log('iaá, contatos novos');
+
+
+                        Chat.createIfNotExists(this._user.email, message.content.email).then(chat => {
+
+                            let contact = new User(message.content.email);
+
+                            contact.on('datachange', data => {
+
+                                contact.chatId = chat.id;
+
+                                this._user.addContact(contact);
+
+                                this._user.chatId = chat.id;
+
+                                contact.addContact(this._user);
+
+                                this.setActiveChat(contact);
+
+                            });
+
+                        });
+
+                    });
+
+                }
 
             });
 
@@ -734,7 +766,6 @@ export default class WhatsAppController {
             let file = this.el.inputDocument.files[0];
             let base64 = this.el.imgPanelDocumentPreview.src;
 
-            console.log('src do base64', base64);
 
             if (file.type === 'application/pdf') {
 
@@ -742,7 +773,6 @@ export default class WhatsAppController {
 
                 Base64.toFile(base64).then(filePreview => {
 
-                    // console.log('entro no upload.', filePreview);
 
                     Message.sendDocument(
                         this._contactActive.chatId,
@@ -772,17 +802,24 @@ export default class WhatsAppController {
         // open contact panel
         this.el.btnAttachContact.on('click', e => {
 
+            this._contactsController = new ContactsController(this.el.modalContacts, this._user);
 
-            this.el.modalContacts.show();
+            this._contactsController.on('select', contact => {
 
-            this._contactsController = new ContactController();
+                Message.sendContact(
+                    this._contactActive.chatId,
+                    this._user.email,
+                    contact
+                );
+
+            });
 
             this._contactsController.open();
         });
         // close contact panel
         this.el.btnCloseModalContacts.on('click', e => {
 
-            this.el.modalContacts.hide();
+            this._contactsController.close();
 
         })
 
