@@ -6,6 +6,7 @@ import { Firebase } from './../util/Firebase';
 import { User } from './../model/User'
 import { Chat } from './../model/Chat'
 import { Message } from './../model/Message'
+import { Base64 } from './../util/Base64';
 // ℹ️ 
 // When a comment Starts with an *** its because that 'section' of code ended
 
@@ -20,8 +21,8 @@ export default class WhatsAppController {
             this.initEvents();
 
 
-            this.initAuth();
-            this.el.appContent.css({ display: 'none' })
+            // this.initAuth();
+            // this.el.appContent.css({ display: 'none' })
 
         } // *** End of constructor
 
@@ -273,7 +274,16 @@ export default class WhatsAppController {
 
                     this.el.panelMessagesContainer.appendChild(view);
 
-                } else if (me) {
+                } else {
+
+                    let view = message.getViewElement(me);
+
+                    this.el.panelMessagesContainer.querySelector('#_' + data.id).innerHTML = view.innerHTML;
+
+                }
+
+
+                if (this.el.panelMessagesContainer.querySelector('#_' + data.id) && me) {
 
                     let msgEl = this.el.panelMessagesContainer.querySelector('#_' + data.id);
 
@@ -717,18 +727,63 @@ export default class WhatsAppController {
             this.closeAllMainPanel();
             this.el.panelMessagesContainer.show();
         });
+
         // send document 
         this.el.btnSendDocument.on('click', e => {
-            console.log('send document');
+
+            let file = this.el.inputDocument.files[0];
+            let base64 = this.el.imgPanelDocumentPreview.src;
+
+            console.log('src do base64', base64);
+
+            if (file.type === 'application/pdf') {
+
+                console.log('entro no if');
+
+                Base64.toFile(base64).then(filePreview => {
+
+                    // console.log('entro no upload.', filePreview);
+
+                    Message.sendDocument(
+                        this._contactActive.chatId,
+                        this._user.email,
+                        file,
+                        filePreview,
+                        this.el.infoPanelDocumentPreview.innerHTML
+                    );
+
+                });
+
+            } else if (file.type !== 'application/pdf') {
+
+                Message.sendDocument(
+                    this._contactActive.chatId,
+                    this._user.email,
+                    file
+                );
+
+            }
+
+            this.el.btnClosePanelDocumentPreview.click();
+
+
         })
 
         // open contact panel
         this.el.btnAttachContact.on('click', e => {
+
+
             this.el.modalContacts.show();
+
+            this._contactsController = new ContactController();
+
+            this._contactsController.open();
         });
         // close contact panel
         this.el.btnCloseModalContacts.on('click', e => {
+
             this.el.modalContacts.hide();
+
         })
 
         // *** Attach Button 📎
