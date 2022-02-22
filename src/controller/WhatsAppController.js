@@ -22,8 +22,8 @@ export default class WhatsAppController {
             this.initEvents();
 
 
-            // this.initAuth();
-            // this.el.appContent.css({ display: 'none' })
+            this.initAuth();
+            this.el.appContent.css({ display: 'none' })
 
         } // *** End of constructor
 
